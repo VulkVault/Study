@@ -3,18 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dual Website Viewer Pro</title>
+    <title>DualView Pro | Advanced Website Viewer</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
-            --primary-color: #4a6fa5;
-            --secondary-color: #166088;
+            --primary-color: #3a7bd5;
+            --secondary-color: #00d2ff;
             --accent-color: #4fc3f7;
             --dark-color: #2d3142;
             --light-color: #f8f9fa;
             --divider-color: #e0e0e0;
-            --divider-hover: #4a6fa5;
-            --header-height: 40px;
+            --divider-hover: #3a7bd5;
+            --header-height: 42px;
+            --toolbar-height: 50px;
+            --status-height: 28px;
+            --button-hover: rgba(255, 255, 255, 0.1);
+            --button-active: rgba(255, 255, 255, 0.2);
+            --border-radius: 6px;
+            --transition-speed: 0.25s;
         }
         
         * {
@@ -24,10 +30,11 @@
         }
         
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
             background-color: #f5f5f5;
             color: #333;
             overflow: hidden;
+            height: 100vh;
         }
         
         .app-container {
@@ -38,50 +45,164 @@
         }
         
         .toolbar {
-            background-color: var(--dark-color);
+            background: linear-gradient(135deg, var(--dark-color), #1a1f2e);
             color: white;
-            padding: 8px 16px;
+            padding: 0 16px;
+            height: var(--toolbar-height);
             display: flex;
             justify-content: space-between;
             align-items: center;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
             z-index: 100;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
         }
         
         .logo {
             font-weight: 600;
-            font-size: 1.2rem;
+            font-size: 1.3rem;
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 10px;
+            background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
         
-        .controls {
+        .logo-icon {
+            font-size: 1.5rem;
+        }
+        
+        .control-groups {
             display: flex;
             gap: 15px;
         }
         
+        .btn-group {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+        
         .btn {
-            background-color: var(--primary-color);
+            background: rgba(255, 255, 255, 0.08);
             color: white;
             border: none;
-            padding: 6px 12px;
-            border-radius: 4px;
+            padding: 8px 14px;
+            border-radius: var(--border-radius);
             cursor: pointer;
             font-size: 0.9rem;
-            transition: all 0.2s;
+            transition: all var(--transition-speed) ease;
             display: flex;
             align-items: center;
-            gap: 5px;
+            gap: 8px;
+            height: 36px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .btn::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(255,255,255,0.1), rgba(255,255,255,0.05));
+            opacity: 0;
+            transition: opacity var(--transition-speed);
         }
         
         .btn:hover {
-            background-color: var(--secondary-color);
+            background: rgba(255, 255, 255, 0.15);
             transform: translateY(-1px);
         }
         
+        .btn:hover::after {
+            opacity: 1;
+        }
+        
+        .btn:active {
+            transform: translateY(0);
+            background: rgba(255, 255, 255, 0.05);
+        }
+        
         .btn i {
-            font-size: 0.9rem;
+            font-size: 0.95rem;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            box-shadow: 0 2px 8px rgba(58, 123, 213, 0.3);
+        }
+        
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #326dc4, #00c7f5);
+            box-shadow: 0 3px 12px rgba(58, 123, 213, 0.4);
+        }
+        
+        .btn-danger {
+            background: rgba(255, 88, 88, 0.85);
+        }
+        
+        .btn-danger:hover {
+            background: rgba(255, 88, 88, 1);
+        }
+        
+        .btn-success {
+            background: rgba(76, 175, 80, 0.85);
+        }
+        
+        .btn-success:hover {
+            background: rgba(76, 175, 80, 1);
+        }
+        
+        .dropdown {
+            position: relative;
+            display: inline-block;
+        }
+        
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            right: 0;
+            background-color: #2d3142;
+            min-width: 200px;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+            z-index: 1;
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+        
+        .dropdown:hover .dropdown-content {
+            display: block;
+            animation: fadeIn var(--transition-speed);
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .dropdown-item {
+            color: white;
+            padding: 12px 16px;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: background-color var(--transition-speed);
+        }
+        
+        .dropdown-item:hover {
+            background-color: rgba(255,255,255,0.1);
+        }
+        
+        .dropdown-divider {
+            height: 1px;
+            background-color: rgba(255,255,255,0.1);
+            margin: 5px 0;
         }
         
         .viewer-container {
@@ -96,18 +217,19 @@
             height: 100%;
             position: relative;
             overflow: hidden;
-            transition: width 0.3s ease;
+            transition: width var(--transition-speed) ease;
         }
         
         .frame-header {
             height: var(--header-height);
-            background-color: var(--primary-color);
+            background: linear-gradient(to right, var(--dark-color), #1a1f2e);
             color: white;
             display: flex;
             align-items: center;
             padding: 0 15px;
             font-weight: 500;
             position: relative;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
         }
         
         .frame {
@@ -118,11 +240,12 @@
         }
         
         .divider {
-            width: 8px;
+            width: 10px;
             background-color: var(--divider-color);
             cursor: col-resize;
             position: relative;
-            transition: background-color 0.2s;
+            transition: all var(--transition-speed);
+            z-index: 10;
         }
         
         .divider:hover {
@@ -134,80 +257,215 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            width: 20px;
-            height: 40px;
-            background-color: var(--primary-color);
+            width: 24px;
+            height: 48px;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
             border-radius: 4px;
             display: flex;
             justify-content: center;
             align-items: center;
             color: white;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
         }
         
         .divider-handle i {
-            font-size: 0.8rem;
+            font-size: 0.9rem;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { opacity: 0.8; }
+            50% { opacity: 1; }
+            100% { opacity: 0.8; }
         }
         
         .url-display {
             font-size: 0.8rem;
-            opacity: 0.9;
-            margin-left: 10px;
+            opacity: 0.8;
+            margin-left: 12px;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
             flex: 1;
+            font-family: 'Consolas', 'Monaco', monospace;
         }
         
         .status-bar {
-            background-color: var(--dark-color);
-            color: white;
-            padding: 5px 15px;
-            font-size: 0.8rem;
+            background: linear-gradient(to right, var(--dark-color), #1a1f2e);
+            color: rgba(255,255,255,0.8);
+            padding: 0 15px;
+            height: var(--status-height);
+            font-size: 0.75rem;
             display: flex;
             justify-content: space-between;
+            align-items: center;
+            border-top: 1px solid rgba(255,255,255,0.05);
         }
         
         .tab-controls {
             display: flex;
-            gap: 5px;
+            gap: 6px;
             margin-left: 10px;
         }
         
         .tab-btn {
-            background: rgba(255,255,255,0.1);
+            background: rgba(255,255,255,0.08);
             border: none;
             color: white;
-            width: 24px;
-            height: 24px;
-            border-radius: 3px;
+            width: 26px;
+            height: 26px;
+            border-radius: 4px;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
+            transition: all var(--transition-speed);
         }
         
         .tab-btn:hover {
-            background: rgba(255,255,255,0.2);
+            background: rgba(255,255,255,0.15);
+            transform: scale(1.05);
+        }
+        
+        .tab-btn:active {
+            transform: scale(0.98);
         }
         
         .notification {
             position: fixed;
             bottom: 40px;
             right: 20px;
-            background-color: var(--primary-color);
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
             color: white;
-            padding: 10px 20px;
-            border-radius: 4px;
-            box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+            padding: 12px 24px;
+            border-radius: var(--border-radius);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
             transform: translateY(100px);
             opacity: 0;
             transition: all 0.3s ease;
             z-index: 1000;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            max-width: 300px;
         }
         
         .notification.show {
             transform: translateY(0);
             opacity: 1;
+        }
+        
+        .notification i {
+            font-size: 1.2rem;
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.7);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .modal-content {
+            background: linear-gradient(to bottom right, #2d3142, #1a1f2e);
+            padding: 25px;
+            border-radius: var(--border-radius);
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            border: 1px solid rgba(255,255,255,0.05);
+            color: white;
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .modal-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+        }
+        
+        .close-modal {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+        
+        .form-input {
+            width: 100%;
+            padding: 10px 15px;
+            border-radius: var(--border-radius);
+            border: 1px solid rgba(255,255,255,0.1);
+            background-color: rgba(0,0,0,0.2);
+            color: white;
+            font-family: inherit;
+        }
+        
+        .form-input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 2px rgba(58, 123, 213, 0.3);
+        }
+        
+        .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        .progress-container {
+            width: 100%;
+            height: 4px;
+            background-color: rgba(255,255,255,0.1);
+            border-radius: 2px;
+            margin-top: 10px;
+            overflow: hidden;
+        }
+        
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+        
+        .badge {
+            display: inline-block;
+            padding: 2px 6px;
+            font-size: 0.7rem;
+            font-weight: bold;
+            line-height: 1;
+            color: white;
+            text-align: center;
+            white-space: nowrap;
+            vertical-align: baseline;
+            border-radius: 10px;
+            background: linear-gradient(to right, #ff416c, #ff4b2b);
+            margin-left: 5px;
         }
     </style>
 </head>
@@ -215,22 +473,69 @@
     <div class="app-container">
         <div class="toolbar">
             <div class="logo">
-                <i class="fas fa-window-restore"></i>
+                <i class="fas fa-window-restore logo-icon"></i>
                 <span>DualView Pro</span>
             </div>
-            <div class="controls">
-                <button class="btn" id="swap-btn">
-                    <i class="fas fa-exchange-alt"></i>
-                    Swap Views
-                </button>
-                <button class="btn" id="reset-btn">
-                    <i class="fas fa-undo"></i>
-                    Reset Split
-                </button>
-                <button class="btn" id="fullscreen-btn">
-                    <i class="fas fa-expand"></i>
-                    Fullscreen
-                </button>
+            
+            <div class="control-groups">
+                <div class="btn-group">
+                    <button class="btn btn-primary" id="new-tab-btn">
+                        <i class="fas fa-plus"></i>
+                        New Tab
+                    </button>
+                    
+                    <div class="dropdown">
+                        <button class="btn" id="layout-btn">
+                            <i class="fas fa-columns"></i>
+                            Layout
+                            <i class="fas fa-caret-down" style="margin-left: 5px;"></i>
+                        </button>
+                        <div class="dropdown-content">
+                            <a href="#" class="dropdown-item" data-layout="50-50">
+                                <i class="fas fa-columns"></i>
+                                Equal Split (50/50)
+                            </a>
+                            <a href="#" class="dropdown-item" data-layout="30-70">
+                                <i class="fas fa-columns"></i>
+                                Main/Secondary (30/70)
+                            </a>
+                            <a href="#" class="dropdown-item" data-layout="70-30">
+                                <i class="fas fa-columns"></i>
+                                Secondary/Main (70/30)
+                            </a>
+                            <div class="dropdown-divider"></div>
+                            <a href="#" class="dropdown-item" data-layout="vertical">
+                                <i class="fas fa-arrows-alt-v"></i>
+                                Vertical Split
+                            </a>
+                            <a href="#" class="dropdown-item" data-layout="horizontal">
+                                <i class="fas fa-arrows-alt-h"></i>
+                                Horizontal Split
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="btn-group">
+                    <button class="btn" id="swap-btn" title="Swap Views">
+                        <i class="fas fa-exchange-alt"></i>
+                    </button>
+                    <button class="btn" id="refresh-all-btn" title="Refresh All">
+                        <i class="fas fa-sync-alt"></i>
+                    </button>
+                    <button class="btn btn-success" id="fullscreen-btn" title="Toggle Fullscreen">
+                        <i class="fas fa-expand"></i>
+                    </button>
+                </div>
+                
+                <div class="btn-group">
+                    <button class="btn" id="settings-btn" title="Settings">
+                        <i class="fas fa-cog"></i>
+                    </button>
+                    <button class="btn btn-danger" id="reset-btn" title="Reset All">
+                        <i class="fas fa-power-off"></i>
+                    </button>
+                </div>
             </div>
         </div>
         
@@ -241,8 +546,14 @@
                     <span>Turbolearn.ai</span>
                     <span class="url-display">https://www.turbolearn.ai/dashboard</span>
                     <div class="tab-controls">
-                        <button class="tab-btn" title="Refresh">
+                        <button class="tab-btn" title="Refresh" data-frame="left">
                             <i class="fas fa-sync-alt"></i>
+                        </button>
+                        <button class="tab-btn" title="New Tab" data-frame="left">
+                            <i class="fas fa-plus"></i>
+                        </button>
+                        <button class="tab-btn" title="Close Tab" data-frame="left">
+                            <i class="fas fa-times"></i>
                         </button>
                     </div>
                 </div>
@@ -251,7 +562,7 @@
             
             <div class="divider" id="divider">
                 <div class="divider-handle">
-                    <i class="fas fa-ellipsis-v"></i>
+                    <i class="fas fa-grip-vertical"></i>
                 </div>
             </div>
             
@@ -261,8 +572,14 @@
                     <span>Solvely.ai</span>
                     <span class="url-display">https://solvely.ai/home</span>
                     <div class="tab-controls">
-                        <button class="tab-btn" title="Refresh">
+                        <button class="tab-btn" title="Refresh" data-frame="right">
                             <i class="fas fa-sync-alt"></i>
+                        </button>
+                        <button class="tab-btn" title="New Tab" data-frame="right">
+                            <i class="fas fa-plus"></i>
+                        </button>
+                        <button class="tab-btn" title="Close Tab" data-frame="right">
+                            <i class="fas fa-times"></i>
                         </button>
                     </div>
                 </div>
@@ -271,12 +588,69 @@
         </div>
         
         <div class="status-bar">
-            <div>DualView Pro v1.0</div>
+            <div>
+                <span>DualView Pro v2.0</span>
+                <span class="badge">BETA</span>
+            </div>
             <div id="status-message">Ready</div>
         </div>
     </div>
     
-    <div class="notification" id="notification"></div>
+    <div class="notification" id="notification">
+        <i class="fas fa-check-circle"></i>
+        <span id="notification-message">Operation completed successfully</span>
+    </div>
+    
+    <div class="modal" id="settings-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">
+                    <i class="fas fa-cog"></i>
+                    Application Settings
+                </div>
+                <button class="close-modal" id="close-settings">&times;</button>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label" for="default-layout">Default Layout</label>
+                <select class="form-input" id="default-layout">
+                    <option value="50-50">Equal Split (50/50)</option>
+                    <option value="30-70">Main/Secondary (30/70)</option>
+                    <option value="70-30">Secondary/Main (70/30)</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label" for="theme-select">Theme</label>
+                <select class="form-input" id="theme-select">
+                    <option value="default">Default (Dark Gradient)</option>
+                    <option value="light">Light Theme</option>
+                    <option value="dark">Pure Dark</option>
+                    <option value="blue">Ocean Blue</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">
+                    <input type="checkbox" id="enable-animations" checked>
+                    Enable Animations
+                </label>
+            </div>
+            
+            <div class="progress-container">
+                <div class="progress-bar" id="settings-progress"></div>
+            </div>
+            
+            <div class="modal-footer">
+                <button class="btn" id="cancel-settings">
+                    Cancel
+                </button>
+                <button class="btn btn-primary" id="save-settings">
+                    Save Changes
+                </button>
+            </div>
+        </div>
+    </div>
     
     <script>
         // DOM Elements
@@ -289,39 +663,115 @@
         const swapBtn = document.getElementById('swap-btn');
         const resetBtn = document.getElementById('reset-btn');
         const fullscreenBtn = document.getElementById('fullscreen-btn');
+        const refreshAllBtn = document.getElementById('refresh-all-btn');
+        const newTabBtn = document.getElementById('new-tab-btn');
+        const layoutBtn = document.getElementById('layout-btn');
+        const settingsBtn = document.getElementById('settings-btn');
         const notification = document.getElementById('notification');
+        const notificationMessage = document.getElementById('notification-message');
         const statusMessage = document.getElementById('status-message');
+        const settingsModal = document.getElementById('settings-modal');
+        const closeSettings = document.getElementById('close-settings');
+        const cancelSettings = document.getElementById('cancel-settings');
+        const saveSettings = document.getElementById('save-settings');
         
-        // Dragging state
+        // State management
         let isDragging = false;
         let startX, startLeftWidth;
+        let currentLayout = '50-50';
+        let settings = {
+            defaultLayout: '50-50',
+            theme: 'default',
+            animations: true
+        };
         
-        // Show notification
-        function showNotification(message, duration = 3000) {
-            notification.textContent = message;
-            notification.classList.add('show');
+        // Initialize the app
+        function initApp() {
+            loadSettings();
+            setupEventListeners();
+            updateStatus("Application ready");
+            showNotification("DualView Pro initialized", 2000);
+        }
+        
+        // Load settings from localStorage
+        function loadSettings() {
+            const savedSettings = localStorage.getItem('dualViewSettings');
+            if (savedSettings) {
+                settings = JSON.parse(savedSettings);
+                applySettings();
+            }
+        }
+        
+        // Save settings to localStorage
+        function saveSettingsToStorage() {
+            localStorage.setItem('dualViewSettings', JSON.stringify(settings));
+            showNotification("Settings saved successfully");
+        }
+        
+        // Apply current settings
+        function applySettings() {
+            // Apply layout
+            changeLayout(settings.defaultLayout);
             
-            setTimeout(() => {
-                notification.classList.remove('show');
-            }, duration);
+            // Apply theme
+            document.body.setAttribute('data-theme', settings.theme);
+            
+            // Apply animations
+            document.body.style.transition = settings.animations ? 'all 0.3s ease' : 'none';
         }
         
-        // Update status message
-        function updateStatus(message) {
-            statusMessage.textContent = message;
+        // Setup event listeners
+        function setupEventListeners() {
+            // Divider drag functionality
+            divider.addEventListener('mousedown', startDrag);
+            document.addEventListener('mousemove', handleDrag);
+            document.addEventListener('mouseup', endDrag);
+            
+            // Button events
+            swapBtn.addEventListener('click', swapViews);
+            resetBtn.addEventListener('click', resetApplication);
+            fullscreenBtn.addEventListener('click', toggleFullscreen);
+            refreshAllBtn.addEventListener('click', refreshAll);
+            newTabBtn.addEventListener('click', openNewTabDialog);
+            settingsBtn.addEventListener('click', openSettings);
+            
+            // Layout dropdown items
+            document.querySelectorAll('.dropdown-item[data-layout]').forEach(item => {
+                item.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    changeLayout(this.getAttribute('data-layout'));
+                });
+            });
+            
+            // Tab control buttons
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const action = this.querySelector('i').className.split(' ')[1];
+                    const frame = this.getAttribute('data-frame');
+                    handleTabAction(action, frame);
+                });
+            });
+            
+            // Settings modal events
+            closeSettings.addEventListener('click', closeModal);
+            cancelSettings.addEventListener('click', closeModal);
+            saveSettings.addEventListener('click', saveSettings);
+            
+            // Window events
+            window.addEventListener('resize', handleResize);
         }
         
-        // Divider drag functionality
-        divider.addEventListener('mousedown', (e) => {
+        // Drag functionality
+        function startDrag(e) {
             isDragging = true;
             startX = e.clientX;
             startLeftWidth = leftContainer.offsetWidth / container.offsetWidth * 100;
             document.body.style.cursor = 'col-resize';
             e.preventDefault();
             updateStatus("Adjusting panel sizes...");
-        });
+        }
         
-        document.addEventListener('mousemove', (e) => {
+        function handleDrag(e) {
             if (!isDragging) return;
             
             const containerWidth = container.offsetWidth;
@@ -333,19 +783,22 @@
             
             leftContainer.style.width = `${newLeftWidth}%`;
             rightContainer.style.width = `${100 - newLeftWidth}%`;
-        });
+            
+            // Update current layout
+            currentLayout = 'custom';
+        }
         
-        document.addEventListener('mouseup', () => {
+        function endDrag() {
             if (isDragging) {
                 isDragging = false;
                 document.body.style.cursor = '';
                 updateStatus("Ready");
                 showNotification("Panel size adjusted");
             }
-        });
+        }
         
-        // Swap views
-        swapBtn.addEventListener('click', () => {
+        // View management
+        function swapViews() {
             const leftSrc = leftFrame.src;
             const leftTitle = leftContainer.querySelector('span').textContent;
             const leftUrlDisplay = leftContainer.querySelector('.url-display').textContent;
@@ -360,42 +813,172 @@
             
             showNotification("Views swapped");
             updateStatus("Views swapped");
-        });
+        }
         
-        // Reset split
-        resetBtn.addEventListener('click', () => {
-            leftContainer.style.width = '50%';
-            rightContainer.style.width = '50%';
-            showNotification("Split reset to 50/50");
-            updateStatus("Split reset");
-        });
+        function refreshAll() {
+            leftFrame.src = leftFrame.src;
+            rightFrame.src = rightFrame.src;
+            showNotification("All views refreshed");
+            updateStatus("Refreshed all tabs");
+        }
         
-        // Fullscreen mode
-        fullscreenBtn.addEventListener('click', () => {
+        function handleTabAction(action, frame) {
+            const frameContainer = frame === 'left' ? leftContainer : rightContainer;
+            const frameElement = frame === 'left' ? leftFrame : rightFrame;
+            
+            switch(action) {
+                case 'fa-sync-alt':
+                    frameElement.src = frameElement.src;
+                    showNotification(`${frameContainer.querySelector('span').textContent} refreshed`);
+                    updateStatus("Tab refreshed");
+                    break;
+                case 'fa-plus':
+                    // In a more advanced version, this would open a new tab
+                    showNotification("New tab functionality coming soon!");
+                    updateStatus("New tab requested");
+                    break;
+                case 'fa-times':
+                    // In a more advanced version, this would close the tab
+                    showNotification("Close tab functionality coming soon!");
+                    updateStatus("Close tab requested");
+                    break;
+            }
+        }
+        
+        // Layout management
+        function changeLayout(layout) {
+            currentLayout = layout;
+            
+            switch(layout) {
+                case '50-50':
+                    leftContainer.style.width = '50%';
+                    rightContainer.style.width = '50%';
+                    break;
+                case '30-70':
+                    leftContainer.style.width = '30%';
+                    rightContainer.style.width = '70%';
+                    break;
+                case '70-30':
+                    leftContainer.style.width = '70%';
+                    rightContainer.style.width = '30%';
+                    break;
+                case 'vertical':
+                    // For future implementation
+                    showNotification("Vertical layout activated");
+                    break;
+                case 'horizontal':
+                    // For future implementation
+                    showNotification("Horizontal layout activated");
+                    break;
+            }
+            
+            if (layout !== 'vertical' && layout !== 'horizontal') {
+                showNotification(`Layout changed to ${layout.split('-').join('/')} split`);
+                updateStatus(`Layout: ${layout.split('-').join('/')}`);
+            }
+        }
+        
+        // Fullscreen functionality
+        function toggleFullscreen() {
             if (!document.fullscreenElement) {
                 document.documentElement.requestFullscreen().catch(err => {
-                    showNotification(`Error attempting to enable fullscreen: ${err.message} (${err.name})`);
+                    showNotification(`Error entering fullscreen: ${err.message}`);
                 });
+                fullscreenBtn.innerHTML = '<i class="fas fa-compress"></i>';
+                fullscreenBtn.setAttribute('title', 'Exit Fullscreen');
             } else {
                 if (document.exitFullscreen) {
                     document.exitFullscreen();
+                    fullscreenBtn.innerHTML = '<i class="fas fa-expand"></i>';
+                    fullscreenBtn.setAttribute('title', 'Enter Fullscreen');
                 }
             }
-        });
+        }
         
-        // Add refresh functionality to tab buttons
-        document.querySelectorAll('.tab-btn').forEach(btn => {
-            btn.addEventListener('click', function() {
-                const frameContainer = this.closest('.frame-container');
-                const frame = frameContainer.querySelector('.frame');
-                frame.src = frame.src;
-                showNotification(`${frameContainer.querySelector('span').textContent} refreshed`);
-                updateStatus("Page refreshed");
-            });
-        });
+        // Modal management
+        function openSettings() {
+            // Load current settings into form
+            document.getElementById('default-layout').value = settings.defaultLayout;
+            document.getElementById('theme-select').value = settings.theme;
+            document.getElementById('enable-animations').checked = settings.animations;
+            
+            settingsModal.style.display = 'flex';
+        }
         
-        // Initialize
-        updateStatus("Ready");
+        function closeModal() {
+            settingsModal.style.display = 'none';
+        }
+        
+        function saveSettings() {
+            // Show saving progress
+            const progressBar = document.getElementById('settings-progress');
+            progressBar.style.width = '0%';
+            
+            // Simulate save progress
+            let progress = 0;
+            const interval = setInterval(() => {
+                progress += 10;
+                progressBar.style.width = `${progress}%`;
+                
+                if (progress >= 100) {
+                    clearInterval(interval);
+                    
+                    // Update settings
+                    settings.defaultLayout = document.getElementById('default-layout').value;
+                    settings.theme = document.getElementById('theme-select').value;
+                    settings.animations = document.getElementById('enable-animations').checked;
+                    
+                    // Save and apply
+                    saveSettingsToStorage();
+                    applySettings();
+                    
+                    // Close modal after short delay
+                    setTimeout(() => {
+                        settingsModal.style.display = 'none';
+                        progressBar.style.width = '0%';
+                    }, 300);
+                }
+            }, 50);
+        }
+        
+        // Application management
+        function resetApplication() {
+            if (confirm("Are you sure you want to reset all settings and views?")) {
+                localStorage.removeItem('dualViewSettings');
+                leftFrame.src = 'https://www.turbolearn.ai/dashboard';
+                rightFrame.src = 'https://solvely.ai/home';
+                changeLayout('50-50');
+                showNotification("Application reset to defaults");
+                updateStatus("Reset complete");
+            }
+        }
+        
+        function openNewTabDialog() {
+            showNotification("New tab dialog coming in next version!");
+            updateStatus("New tab requested");
+        }
+        
+        // Window resize handler
+        function handleResize() {
+            updateStatus(`Window resized: ${window.innerWidth}×${window.innerHeight}`);
+        }
+        
+        // UI Utilities
+        function showNotification(message, duration = 3000) {
+            notificationMessage.textContent = message;
+            notification.classList.add('show');
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, duration);
+        }
+        
+        function updateStatus(message) {
+            statusMessage.textContent = message;
+        }
+        
+        // Initialize the application
+        initApp();
     </script>
 </body>
 </html>
